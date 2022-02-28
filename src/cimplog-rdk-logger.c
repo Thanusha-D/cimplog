@@ -19,6 +19,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <rdk_debug.h>
+#include <time.h>
 
 #include "cimplog.h"
 
@@ -27,6 +28,18 @@
 
 const char *__attribute__((weak)) rdk_logger_module_fetch(void);
 static int init_done = 0;
+
+char buffer[26];
+char * timeGet() {
+    time_t timer;
+    struct tm* tm_info;
+
+    timer = time(NULL);
+    tm_info = localtime(&timer);
+
+    strftime(buffer, 26, "%Y-%m-%d %H:%M:%S", tm_info); 
+    return buffer;
+}   
 
 void __cimplog(const char *module, int level, const char *msg, ...)
 {
@@ -44,7 +57,9 @@ void __cimplog(const char *module, int level, const char *msg, ...)
         }
         else
         {
+	    printf("__cimplog time before RDK_LOGGER_INIT Time : %s\n",	timeGet());
             RDK_LOGGER_INIT();
+	    printf("__cimplog time after RDK_LOGGER_INIT Time : %s\n", timeGet());
         }
         init_done = 1;
     }
@@ -97,7 +112,9 @@ void __cimplog_rdk_generic(const char *rdk_logger_module, const char *module, in
 {
     if( !init_done )
     {
+	printf("__cimplog_rdk_generic time before RDK_LOGGER_INIT Time : %s\n", timeGet());      
         RDK_LOGGER_INIT();
+	printf("__cimplog_rdk_generic time after RDK_LOGGER_INIT Time : %s\n", timeGet());
         init_done = 1;
     }
 
